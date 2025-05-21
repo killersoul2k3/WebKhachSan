@@ -1,0 +1,151 @@
+/* HomePage styles */ 
+body, html, #root, .ant-layout {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.main-header {
+  background: rgba(0,0,0,0.7);
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+.logo {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-right: 32px;
+  letter-spacing: 2px;
+}
+.hero-section {
+  position: relative;
+  padding-top: 64px;
+  min-height: 400px;
+  min-height: 400px;
+  overflow: hidden;
+}
+.main-carousel {
+  width: 100%;
+  height: 60vh;
+}
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+.hero-text {
+  position: absolute;
+  top: 40%;
+  left: 10%;
+  color: #fff;
+  z-index: 2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.section {
+  padding: 48px 0 32px 0;
+  background: #fff;
+}
+.about-section {
+  background: #f5f6fa;
+}
+.about-img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.event-section, .food-section {
+  background: #fff;
+}
+.event-img, .food-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.booking-section {
+  background: #f5f6fa;
+}
+.booking-form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.main-footer {
+  background: #222;
+  color: #fff;
+  padding: 120px 32px 16px 32px;
+}
+.main-footer h3 {
+  color: #ffd700;
+  margin-bottom: 16px;
+}
+.main-footer p, .main-footer a {
+  color: #fff;
+  margin-bottom: 8px;
+}
+.main-footer iframe {
+  display: block;
+  margin-top: 16px;
+}
+@media (min-width: 768px) {
+  .main-footer .ant-row > .ant-col {
+  }
+  .main-footer .ant-row > .ant-col:nth-child(2) {
+    text-align: right;
+  }
+}
+@media (max-width: 768px) {
+  .hero-text {
+    left: 5%;
+    top: 30%;
+    font-size: 1rem;
+  }
+  .section {
+    padding: 24px 16px;
+  }
+  .booking-form {
+    padding: 12px;
+  }
+  .main-footer {
+    padding: 24px 16px 12px 16px;
+    text-align: center;
+  }
+  .main-footer iframe {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Styles for main content area */
+.ant-layout-content {
+  max-width: 1400px; /* Increased maximum width for content */
+  margin: 0 auto; /* Center the content block */
+  padding: 0 16px; /* Add some horizontal padding on smaller screens */
+}
+
+.section {
+  padding: 48px 0 32px 0;
+  background: #fff;
+}
+
+/* Divider line style */
+.divider-line {
+  height: 1px; /* Thickness of the line */ 
+  background-color: #000; /* Black color */ 
+  margin: 40px 0; /* Add space above and below the line */ 
+}
+
+/* Styles for text and links in the main-footer */
+.main-footer p,
+.main-footer a,
+.main-footer .anticon { /* Also target Ant Design icons if any within these elements */
+  color: #000; /* Change text color to black */
+  margin-bottom: 8px;
+} 

@@ -1,0 +1,9 @@
+{
+  "rooms": [
+    { "id": 1, "name": "Phòng đơn", "price": 500000 },
+    { "id": 2, "name": "Phòng đôi", "price": 800000 }
+  ],
+  "bookings": [
+    { "id": 1, "roomId": 1, "customer": "Nguyen Van A" }
+  ]
+} 

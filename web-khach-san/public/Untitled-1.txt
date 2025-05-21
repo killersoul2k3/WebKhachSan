@@ -1,0 +1,22 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import RoomTypesPage from '../pages/RoomTypesPage';
+import RoomDetailsPage from '../pages/RoomDetailsPage';
+import TransactionPage from '../pages/TransactionPage';
+import AdminDashboardPage from '../pages/AdminDashboardPage';
+import LoginPage from '../pages/LoginPage';
+
+export default function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/rooms" element={<RoomTypesPage />} />
+        <Route path="/rooms/:id" element={<RoomDetailsPage />} />
+        <Route path="/transaction" element={<TransactionPage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
