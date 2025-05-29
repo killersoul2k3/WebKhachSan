@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, Row, Col, Carousel, Button, Typography, Descriptions, Spin, Form, Input, message } from 'antd';
-import { HomeOutlined, ArrowLeftOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Button, Form, Input, message, DatePicker, Carousel, Spin, Row, Col, Card, Typography, Descriptions } from 'antd';
+import { HomeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import 'antd/dist/reset.css';
 
 // Import mock data from RoomTypesPage (for now)
@@ -10,6 +10,7 @@ import { mockRooms } from './RoomTypesPage';
 
 const { Title, Paragraph } = Typography;
 const { Item } = Descriptions;
+const { Item: FormItem } = Form; // Alias Form.Item to avoid conflict with Descriptions.Item
 
 const RoomDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Lấy ID từ URL
@@ -36,7 +37,14 @@ const RoomDetailsPage: React.FC = () => {
     console.log('Success:', values);
     message.success('Bạn đã đặt phòng thành công! Đang chuyển hướng đến trang thanh toán...');
     // Navigate to transaction page, passing room and user details
-    navigate('/transaction', { state: { roomId: room?.id, roomName: room?.name, roomPrice: room?.price, bookingDetails: values } });
+    let finalPrice = room?.price;
+    const hasSpecialRequest = values.note && values.note.trim() !== '';
+
+    if (hasSpecialRequest) {
+      finalPrice = (room?.price || 0) * 1.15; // Add 15% for special requests if note exists
+    }
+
+    navigate('/transaction', { state: { roomId: room?.id, roomName: room?.name, roomPrice: room?.price, bookingDetails: values, finalAmount: finalPrice, hasSpecialRequest: hasSpecialRequest } });
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -47,7 +55,9 @@ const RoomDetailsPage: React.FC = () => {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: 50 }}>
-        <Spin size="large" tip="Đang tải thông tin phòng..."></Spin>
+        <Spin size="large">
+           Đang tải thông tin phòng...
+        </Spin>
       </div>
     );
   }
@@ -67,8 +77,12 @@ const RoomDetailsPage: React.FC = () => {
     <div style={{ padding: 32, background: '#f5f6fa', minHeight: '100vh' }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
-          <Button icon={<HomeOutlined />} onClick={() => navigate('/')} style={{ marginRight: 16 }}>Về trang chủ</Button>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/rooms')}>Về danh sách phòng</Button>
+          <Button icon={<HomeOutlined />} onClick={() => navigate('/')} style={{ marginRight: 16 }}>
+            Về trang chủ
+          </Button>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/rooms')}>
+            Về danh sách phòng
+          </Button>
         </Col>
         <Col>
           <Title level={2}>{room.name}</Title>
@@ -94,7 +108,7 @@ const RoomDetailsPage: React.FC = () => {
             <Title level={4}>Thông tin chi tiết</Title>
             <Descriptions bordered column={1}>
               <Item label="Loại phòng">{room.type}</Item>
-              <Item label="Giá">{room.price.toLocaleString()} VNĐ / đêm</Item>
+              <Item label="Giá">{room?.price?.toLocaleString()} VNĐ</Item>
               <Item label="Địa điểm">{room.location}</Item>
               <Item label="Mùa gợi ý">{room.season}</Item>
               <Item label="Trạng thái">{room.status}</Item>
@@ -111,23 +125,40 @@ const RoomDetailsPage: React.FC = () => {
               <Form layout="vertical" onFinish={onFinish} onFinishFailed={onFinishFailed} className="booking-form">
                 <Row gutter={16}>
                   <Col md={12} xs={24}>
-                    <Form.Item name="name" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}><Input /></Form.Item>
+                    <FormItem name="name" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}>
+                      <Input id="name" />
+                    </FormItem>
                   </Col>
                   <Col md={12} xs={24}>
-                    <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Vui lòng nhập email hợp lệ!' }]}><Input /></Form.Item>
+                    <FormItem name="email" label="Email" rules={[{ required: true, type: 'email', message: 'Vui lòng nhập email hợp lệ!' }]}>
+                      <Input id="email" />
+                    </FormItem>
                   </Col>
-                  <Col md={12} xs={24}>
-                    <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}><Input /></Form.Item>
-                  </Col>
-                  <Col md={12} xs={24}>
-                    <Form.Item name="date" label="Ngày nhận phòng" rules={[{ required: true, message: 'Chọn ngày nhận phòng!' }]}><Input type="date" /></Form.Item>
                   
+                  <Col md={12} xs={24}>
+                    <FormItem name="checkInDateTime" label="Ngày nhận phòng" rules={[{ required: true, message: 'Chọn ngày và giờ nhận phòng!' }]}>
+                      <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
+                    </FormItem>
+                  </Col>
+                  <Col md ={ 12} xs={24}>
+                    <FormItem name="checkOutDateTime" label="Ngày trả phòng" rules={[{ required: true, message: 'Chọn ngày và giờ trả phòng!' }]}>
+                      <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
+                    </FormItem>
+                  </Col>  
+                  <Col md={12} xs={24}>
+                    <FormItem name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                      <Input id="phone" />
+                    </FormItem>
                   </Col>
                   <Col md={12} xs={24}>
-                    <Form.Item name="note" label="Ghi chú"><Input /></Form.Item>
+                    <FormItem name="note" label="Ghi chú">
+                      <Input id="note" />
+                    </FormItem>
                   </Col>
                 </Row>
-                <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>Xác nhận đặt phòng</Button>
+                <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
+                  Xác nhận đặt phòng
+                </Button>
               </Form>
             </div>
           </Card>

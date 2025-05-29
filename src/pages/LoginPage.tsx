@@ -2,40 +2,42 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, Space, Row, Col, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-
-export const updatedMockUserRoles = [
-  { username: 'admin', password: '123', role: 'admin' },
-  { username: 'letan1', password: '123', role: 'letan1' },
-  // ... các user khác
-];
+import { updatedMockUserRoles, UserRole as MockUserRole } from '../mockData'; // Import updated mock user role data and UserRole type
 
 const { Title } = Typography;
-const { Item } = Form;
+const { Item: FormItem } = Form;
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
 
   const onFinish = (values: any) => {
     setLoading(true);
     console.log('Success:', values);
-      const ADMIN_USERNAME = 'admin';
-      const ADMIN_PASSWORD = '123';
-      const LETAN1_ROLE = 'letan1';
-      const LETAN1_PASSWORD = '123';
+    // const ADMIN_USERNAME = 'admin'; // Commented out as using mock data
+    // const ADMIN_PASSWORD = '123'; // Commented out as using mock data
+
     setTimeout(() => {
       setLoading(false);
       // Find the user in the updated mock data
       const authenticatedUser = updatedMockUserRoles.find(
-        (user) => user.username === values.username && user.password === values.password
+        (user: MockUserRole) => user.username === values.username && user.password === values.password
       );
 
       if (authenticatedUser) {
         message.success('Đăng nhập thành công!');
         // Store user info in localStorage (for demo purposes)
         localStorage.setItem('loggedInUser', JSON.stringify(authenticatedUser));
-        navigate('/admin'); // Redirect to admin dashboard
+
+        // Redirect based on role
+        if (authenticatedUser.role === 'admin') {
+             navigate('/admin'); // Redirect to admin dashboard
+        } else if (authenticatedUser.role === 'letan') {
+             navigate('/letan'); // Redirect to reception dashboard (if applicable)
+        } else {
+             navigate('/'); // Default redirect for other roles
+        }
+
       } else {
         message.error('Sai tên đăng nhập hoặc mật khẩu!');
       }
@@ -57,34 +59,34 @@ const LoginPage: React.FC = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item
+          <FormItem
             label="Tên đăng nhập"
             name="username"
-            rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+            rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}+
           >
             <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
-          </Form.Item>
-          <Form.Item
+          </FormItem>
+          <FormItem
             label="Mật khẩu"
             name="password"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}+
           >
             <Input
-              prefix={<LockOutlined />}
+              prefix={<LockOutlined />}+
               type="password"
               placeholder="Mật khẩu"
             />
-          </Form.Item>
+          </FormItem>
 
-          <Form.Item>
+          <FormItem>
             <Button type="primary" htmlType="submit" style={{ width: '100%' }} loading={loading}>
               Đăng nhập
             </Button>
-          </Form.Item>
+          </FormItem>
         </Form>
       </Card>
     </div>
   );
 };
 
-export default LoginPage;
+export default LoginPage; 

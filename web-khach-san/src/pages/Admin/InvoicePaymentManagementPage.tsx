@@ -21,11 +21,22 @@ const InvoicePaymentManagementPage: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>(mockInvoices);
 
+  // Function to get booking details by ID (for demonstration)
+  const getBookingDetails = (bookingId: number) => {
+    return mockBookings.find(booking => booking.id === bookingId);
+  };
+
+  // Function to get customer name by ID
+  const getCustomerName = (customerId: number): string => {
+    const customer = mockCustomers.find(c => c.id === customerId);
+    return customer ? customer.name : 'N/A';
+  };
+
   // Update filtered invoices when mockInvoices or searchText changes
   useEffect(() => {
     const lowercasedSearchText = searchText.toLowerCase();
     const filteredData = mockInvoices.filter((invoice: Invoice) => {
-      const customerName = mockCustomers.find(c => c.id === invoice.customerId)?.name.toLowerCase() || '';
+      const customerName = getCustomerName(invoice.customerId).toLowerCase();
 
       return (
         invoice.id.toString().includes(lowercasedSearchText) ||
@@ -40,9 +51,13 @@ const InvoicePaymentManagementPage: React.FC = () => {
 
   // Define table columns
   const columns = [
-    { title: 'ID Hóa đơn', dataIndex: 'id', key: 'id' },
     {
-      title: 'ID Booking',
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Booking ID',
       dataIndex: 'bookingId',
       key: 'bookingId',
       render: (bookingId: number) => bookingId,
@@ -50,28 +65,26 @@ const InvoicePaymentManagementPage: React.FC = () => {
     {
       title: 'Khách hàng',
       dataIndex: 'customerId',
-      key: 'customerName',
-      render: (customerId: number) => mockCustomers.find(c => c.id === customerId)?.name || 'N/A',
+      key: 'customerId',
+      render: (customerId: number) => getCustomerName(customerId),
     },
-    { title: 'Số tiền', dataIndex: 'amount', key: 'amount', render: (amount: number) => `${amount.toLocaleString()} VNĐ` },
-    { title: 'Phương thức thanh toán', dataIndex: 'paymentMethod', key: 'paymentMethod' },
     {
-      title: 'Trạng thái thanh toán',
+      title: 'Tổng tiền (VNĐ)',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (amount: number) => amount.toLocaleString(),
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'invoiceDate',
+      key: 'invoiceDate',
+    },
+    {
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        let color;
-        if (status === 'Đã thanh toán') {
-          color = 'green';
-        } else if (status === 'Chờ thanh toán tiền mặt') {
-          color = 'volcano';
-        } else if (status === 'Chưa thanh toán') {
-          color = 'red';
-        } else if (status === 'Đã gia hạn') {
-          color = 'blue'; // Or another color to indicate extension
-        } else {
-          color = 'default';
-        }
+        let color = status === 'Đã thanh toán' ? 'green' : 'volcano';
         return (
           <Tag color={color}>
             {status}
@@ -79,23 +92,21 @@ const InvoicePaymentManagementPage: React.FC = () => {
         );
       },
     },
-    { title: 'Ngày tạo hóa đơn', dataIndex: 'invoiceDate', key: 'invoiceDate' },
-    { title: 'Ghi chú', dataIndex: 'notes', key: 'notes' },
-    // Add more columns as needed
   ];
 
+  // Function to handle search input change
   const handleSearch = (value: string) => {
     setSearchText(value);
   };
 
   return (
-    <div>
+    <div style={{ padding: 24 }}>
       <Title level={2}>Quản lý hóa đơn & thanh toán</Title>
 
       {/* Search Bar */}
-       <Space style={{ marginBottom: 16, width: '100%' }}>
+      <Space style={{ marginBottom: 16, width: '100%' }}>
         <Search
-          placeholder="Tìm kiếm theo ID hóa đơn, ID booking, khách hàng, phương thức, trạng thái"
+          placeholder="Tìm kiếm theo ID, Booking ID, khách hàng, trạng thái..."
           allowClear
           enterButton="Tìm kiếm"
           size="large"

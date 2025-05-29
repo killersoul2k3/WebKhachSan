@@ -64,6 +64,31 @@ export const mockBookings = [
   { id: 20, customerId: 20, roomId: 9, checkInDate: getPastDate(10), checkOutDate: getPastDate(8), status: "Đã hoàn thành", requestedFeatures: "", roomType: mockRooms.find(r => r.id === 9)?.type, numberOfRooms: 1, customerName: mockCustomers.find(c => c.id === 20)?.name },
 ];
 
+// Combine customer and booking data
+export const customersWithBookings = mockCustomers.map(customer => {
+  const customerBookings = mockBookings
+    .filter(booking => booking.customerId === customer.id)
+    .map(booking => {
+      const room = mockRooms.find(r => r.id === booking.roomId);
+      return {
+        bookingId: booking.id,
+        roomName: room?.name || "Không rõ",
+        roomType: room?.type || "Không rõ",
+        roomPrice: room?.price || 0,
+        checkInDate: booking.checkInDate,
+        checkOutDate: booking.checkOutDate,
+        status: booking.status,
+        requestedFeatures: booking.requestedFeatures,
+        promotion: "", // Placeholder for promotion
+      };
+    });
+
+  return {
+    ...customer,
+    bookings: customerBookings,
+  };
+});
+
 interface Invoice {
   id: number;
   bookingId: number;
@@ -131,4 +156,52 @@ export const mockUserRoles = [
   { id: 3, username: "nguyenvietanh", role: "Kế toán", email: "nguyenvietanh@hotelluxury.com" },
   { id: 4, username: "phamminhhoa", role: "Quản lý phòng", email: "phamminhhoa@hotelluxury.com" },
   { id: 5, username: "tranvantai", role: "Dịch vụ", email: "tranvantai@hotelluxury.com" },
-]; 
+];
+
+// Updated Mock User Role Data with more details and edit permissions
+export const updatedMockUserRoles = mockUserRoles.map(user => {
+  let department = "Không rõ";
+  let canEdit = false;
+  let password = "password123"; // Temporary password for demo
+
+  switch (user.role) {
+    case "Admin Tổng":
+      department = "Ban giám đốc";
+      canEdit = true;
+      break;
+    case "Lễ tân":
+      department = "Bộ phận Tiền sảnh";
+      canEdit = true;
+      break;
+    case "Kế toán":
+      department = "Bộ phận Tài chính";
+      canEdit = true;
+      break;
+    case "Quản lý phòng":
+      department = "Bộ phận Tiền sảnh";
+      canEdit = true;
+      break;
+    case "Dịch vụ":
+      department = "Bộ phận Dịch vụ";
+      canEdit = true;
+        break;
+    // Add more cases for other roles
+  }
+
+  return {
+    ...user,
+    department: department,
+    password: password, // Add temporary password
+    canEdit: canEdit, // Add edit permission flag
+  };
+});
+
+export interface UserRole {
+  id: number;
+  username: string;
+  role: string;
+  email: string;
+  department?: string; // Make optional in case not all roles have department
+  password?: string; // Make optional as not always needed
+  canEdit?: boolean; // Make optional
+} 

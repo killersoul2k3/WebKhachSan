@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Web Khách Sạn",
+  "name": "Quản lý Khách Sạn",
   "icons": [
     {
       "src": "favicon.ico",
@@ -23,3 +23,11 @@
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }
+
+import Card from 'antd/es/card';
+import Statistic from 'antd/es/statistic';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
+import Button from 'antd/es/button';
+import Space from 'antd/es/space';
+import message from 'antd/es/message';

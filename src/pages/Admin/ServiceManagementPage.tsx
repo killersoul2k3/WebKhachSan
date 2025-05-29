@@ -1,60 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Table, Tag, Input, Space, Button, Modal, Form, message } from 'antd';
+import { Typography, Table, Tag, Input, Space, Button, Modal, Form, message } from 'antd'; // Import message
 import { mockServices } from '../../mockData'; // Import mock service data
+import type { ColumnsType } from 'antd/es/table'; // Import ColumnsType
+
+const { Title } = Typography;
+const { Search, TextArea } = Input; // Destructure TextArea
+const { Item: FormItem } = Form; // Alias Form.Item to avoid conflict if needed later
 
 // Define Service interface based on the structure in mockData.ts
 interface Service {
   id: number;
   name: string;
   price: number;
-  description: string;
-  image?: string; // Thêm trường ảnh, có thể là URL
+  description?: string;
 }
 
-const { Title } = Typography;
-const { Search } = Input;
-const { Item: FormItem } = Form; // Alias Form.Item to avoid conflict if needed later
-
 const ServiceManagementPage: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
-  const [serviceList, setServiceList] = useState<Service[]>(mockServices); // State to hold mutable service data
-  const [filteredServices, setFilteredServices] = useState<Service[]>([]); // State for filtered list
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState<string>('');
+  const [serviceList, setServiceList] = useState<Service[]>(mockServices);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [form] = Form.useForm(); // Create a form instance
 
   // Update filtered services when serviceList or searchText changes
-  useEffect(() => {
-    const lowercasedSearchText = searchText.toLowerCase();
-    const filteredData = serviceList.filter((service: Service) =>
-      service.name.toLowerCase().includes(lowercasedSearchText) ||
-      service.description.toLowerCase().includes(lowercasedSearchText) ||
-      service.price.toString().includes(lowercasedSearchText) // Allow searching by price as well
-    );
-    setFilteredServices(filteredData);
-  }, [searchText, serviceList]); // Depend on searchText and serviceList
+  const filteredServices = serviceList.filter(service =>
+    service.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    (service.description?.toLowerCase().includes(searchText.toLowerCase()) || false) ||
+    service.price.toString().includes(searchText) // Allow searching by price as well
+  );
 
-  // Handlers for CRUD operations
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+  };
+
   const handleAdd = () => {
-    setEditingService(null); // Clear any previous editing data
+    setEditingService(null);
+    form.resetFields();
     setIsModalVisible(true);
-    form.resetFields(); // Reset form fields
   };
 
   const handleEdit = (service: Service) => {
     setEditingService(service);
+    form.setFieldsValue(service);
     setIsModalVisible(true);
-    form.setFieldsValue(service); // Set form fields with service data
   };
 
   const handleDelete = (serviceId: number) => {
-    // In a real app, you would call an API here
+    // In a real app, you'd call an API here
     const updatedList = serviceList.filter(service => service.id !== serviceId);
     setServiceList(updatedList); // Update state
     message.success('Dịch vụ đã được xóa.'); // Provide feedback
   };
 
   const handleSave = (values: Service) => {
+    // In a real app, you'd call an API here
     if (editingService) {
       // Update existing service
       const updatedList = serviceList.map(service =>
@@ -70,32 +69,15 @@ const ServiceManagementPage: React.FC = () => {
     }
     setIsModalVisible(false);
   };
-      
+
   const handleCancel = () => {
     setIsModalVisible(false);
-    form.resetFields(); // Reset form on cancel
+    setEditingService(null);
+    form.resetFields();
   };
 
-  // Function to handle search input change
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-  };
-
-  const defaultImage = 'https://via.placeholder.com/80x60?text=No+Image'; // Ảnh mặc định
-
-  const columns = [
-    {
-      title: 'Ảnh',
-      dataIndex: 'image',
-      key: 'image',
-      render: (image: string | undefined) => (
-        <img
-          src={image || defaultImage}
-          alt="service"
-          style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 4, border: '1px solid #eee' }}
-        />
-      ),
-    },
+  // Define table columns with explicit type annotation
+  const columns: ColumnsType<Service> = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -107,16 +89,20 @@ const ServiceManagementPage: React.FC = () => {
       key: 'name',
     },
     {
-      title: 'Giá (VNĐ)',
+      title: 'Giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price: number) => price.toLocaleString(),
+      render: (price: number) => `${price.toLocaleString()} VNĐ`,
     },
-    {
-      title: 'Hành động',
+     {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {\n      title: 'Hành động',
       key: 'action',
       render: (_: any, record: Service) => (
-        <Space size="small">
+        <Space size="middle">
           <Button type="link" onClick={() => handleEdit(record)}>Sửa</Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>Xóa</Button>
         </Space>
@@ -126,12 +112,12 @@ const ServiceManagementPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Title level={2}>Quản lý dịch vụ</Title>
+      <Title level={2}>Quản lý Dịch vụ</Title>
 
-      {/* Search Bar */}
+      {/* Search and Add Button */}
       <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
         <Search
-          placeholder="Tìm kiếm theo tên dịch vụ..."
+          placeholder="Tìm kiếm theo tên, mô tả, giá..."
           allowClear
           enterButton="Tìm kiếm"
           size="large"
@@ -139,13 +125,13 @@ const ServiceManagementPage: React.FC = () => {
           onChange={(e) => handleSearch(e.target.value)} // Filter as user types
           style={{ width: 400 }}
         />
-        <Button type="primary" onClick={handleAdd}>Thêm mới</Button>
+        <Button type="primary" onClick={handleAdd}>Thêm mới dịch vụ</Button>
       </Space>
 
       {/* Display service data in a Table */}
       <Table
         dataSource={filteredServices} // Use the filtered service data
-        columns={columns}
+        columns={columns} as any // Cast to any temporarily if type issues persist
         rowKey="id" // Use a unique key for each row
         pagination={{ pageSize: 10 }} // Add pagination with 10 items per page
       />
@@ -153,56 +139,45 @@ const ServiceManagementPage: React.FC = () => {
       {/* Add/Edit Service Modal */}
       <Modal
         title={editingService ? 'Chỉnh sửa dịch vụ' : 'Thêm mới dịch vụ'}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
-        footer={null}
+        footer={null} // Hide default footer buttons
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSave}
         >
-          <Form.Item
+          <FormItem
             name="name"
             label="Tên dịch vụ"
             rules={[{ required: true, message: 'Vui lòng nhập tên dịch vụ!' }]}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
+            <Input id="service-name"/>
+          </FormItem>
+          <FormItem
             name="price"
             label="Giá"
             rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
+            <Input type="number" id="service-price"/>
+          </FormItem>
+          <FormItem
             name="description"
             label="Mô tả"
           >
-            <Input.TextArea rows={3} />
-          </Form.Item>
-          <Form.Item
-            name="image"
-            label="Link ảnh (URL)"
-            rules={[
-              { required: true, message: 'Vui lòng nhập link ảnh!' },
-              { type: 'url', message: 'Link ảnh không hợp lệ!' },
-            ]}
-            initialValue={defaultImage}
-          >
-            <Input placeholder="https://..." />
-          </Form.Item>
-          <Form.Item>
+            <TextArea rows={3} id="service-description"/>
+          </FormItem>
+          <FormItem>
             <Space>
               <Button onClick={handleCancel}>Hủy</Button>
               <Button type="primary" htmlType="submit">Lưu</Button>
             </Space>
-          </Form.Item>
+          </FormItem>
         </Form>
       </Modal>
     </div>
   );
 };
 
-export default ServiceManagementPage;
+export default ServiceManagementPage; 

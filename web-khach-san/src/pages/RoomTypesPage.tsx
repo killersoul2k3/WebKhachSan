@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Card, Input, Select, Button, Modal, Form, Pagination, Carousel, Descriptions } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
-
+const presetPrices = [
+  500000, 800000, 1000000, 2000000, 3000000, 5000000, 10000000
+];
 export const mockRooms = [
   {
     id: 1,
@@ -300,81 +302,6 @@ export const mockRooms = [
   },
   {
     id: 17,
-    name: 'Phòng VIP City View - HCM',
-    type: 'VIP',
-    price: 3000000,
-    location: 'Hồ Chí Minh',
-    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80',
-    season: 'Nắng',
-    description: 'Phòng VIP view đẹp nhìn ra trung tâm Sài Gòn.',
-    images: ['https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1540518614846-df623160335b?auto=format&fit=crop&w=600&q=80'],
-    interior: ['Giường King size', 'Khu vực tiếp khách', 'Minibar', 'TV lớn'],
-    view: 'Toàn cảnh thành phố',
-    notes: 'Bao gồm quyền sử dụng Executive Lounge.',
-    status: 'Trống'
-  },
-  {
-    id: 18,
-    name: 'Suite Luxury - HCM',
-    type: 'Luxury',
-    price: 6000000,
-    location: 'Hồ Chí Minh',
-    image: 'https://images.unsplash.com/photo-1578683010236-d716f9d2d566?auto=format&fit=crop&w=400&q=80',
-    season: 'Nắng',
-    description: 'Suite sang trọng với nội thất cao cấp.',
-    images: ['https://images.unsplash.com/photo-1578683010236-d716f9d2d566?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1540518614846-df623160335b?auto=format&fit=crop&w=600&q=80'],
-    interior: ['Giường King size', 'Phòng khách riêng', 'Bàn làm việc lớn', 'Minibar cao cấp', 'Phòng tắm sang trọng'],
-    view: 'Hướng sông',
-    notes: 'Dịch vụ phòng 24/7.',
-    status: 'Trống'
-  },
-  {
-    id: 19,
-    name: 'Phòng Đơn Phổ Thông - Đà Nẵng',
-    type: 'Đơn',
-    price: 600000,
-    location: 'Đà Nẵng',
-    image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=400&q=80',
-    season: 'Hè',
-    description: 'Phòng đơn gần bãi biển, giá hợp lý.',
-    images: ['https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1540518614846-df623160335b?auto=format&fit=crop&w=600&q=80'],
-    interior: ['Giường đơn', 'Tủ quần áo', 'Điều hòa'],
-    view: 'Hướng phố',
-    notes: 'Đi bộ ra biển 5 phút.',
-    status: 'Trống'
-  },
-  {
-    id: 20,
-    name: 'Phòng Đôi Hướng Biển - Đà Nẵng',
-    type: 'Đôi',
-    price: 1300000,
-    location: 'Đà Nẵng',
-    image: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
-    season: 'Hè',
-    description: 'Phòng đôi có ban công nhìn thẳng ra biển Đà Nẵng.',
-    images: ['https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1540518614846-df623160335b?auto=format&fit=crop&w=600&q=80'],
-    interior: ['Giường đôi', 'Ban công', 'Ghế thư giãn', 'Minibar'],
-    view: 'Trực diện biển',
-    notes: 'Thích hợp ngắm bình minh.',
-    status: 'Trống'
-  },
-  {
-    id: 21,
-    name: 'Phòng Gia Đình Gần Biển - Đà Nẵng',
-    type: 'Gia đình',
-    price: 1600000,
-    location: 'Đà Nẵng',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=400&q=80',
-    season: 'Hè',
-    description: 'Phòng cho gia đình gần khu vực bãi biển Mỹ Khê.',
-    images: ['https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1540518614846-df623160335b?auto=format&fit=crop&w=600&q=80'],
-    interior: ['Giường đôi, 2 Giường đơn', 'Khu vực sinh hoạt chung'],
-    view: 'Hướng phố',
-    notes: 'Gần nhà hàng hải sản.',
-    status: 'Trống'
-  },
-  {
-    id: 22,
     name: 'Phòng VIP Panorama - Đà Nẵng',
     type: 'VIP',
     price: 3800000,
@@ -389,7 +316,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 23,
+    id: 18,
     name: 'Executive Suite - Đà Nẵng',
     type: 'Suite',
     price: 4500000,
@@ -404,7 +331,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 24,
+    id: 19,
     name: 'Phòng Đơn Tiết Kiệm - Hà Nội',
     type: 'Đơn',
     price: 550000,
@@ -419,7 +346,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 25,
+    id: 20,
     name: 'Phòng Đôi View Hồ Gươm - Hà Nội',
     type: 'Đôi',
     price: 1500000,
@@ -434,7 +361,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 26,
+    id: 21,
     name: 'Phòng Gia Đình Phố Cổ - Hà Nội',
     type: 'Gia đình',
     price: 1900000,
@@ -449,7 +376,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 27,
+    id: 22,
     name: 'Phòng VIP View Sông Hương - Huế',
     type: 'VIP',
     price: 2500000,
@@ -464,7 +391,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 28,
+    id: 23,
     name: 'Suite Hoàng Gia - Huế',
     type: 'Suite',
     price: 5500000,
@@ -479,7 +406,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 29,
+    id: 24,
     name: 'Phòng Đơn Standard - Nha Trang',
     type: 'Đơn',
     price: 700000,
@@ -494,7 +421,7 @@ export const mockRooms = [
     status: 'Đang sử dụng'
   },
   {
-    id: 30,
+    id: 25,
     name: 'Phòng Đôi View Biển Nhỏ - Nha Trang',
     type: 'Đôi',
     price: 1400000,
@@ -509,7 +436,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 31,
+    id: 26,
     name: 'Phòng Đơn Gần Sân Bay - HCM',
     type: 'Đơn',
     price: 600000,
@@ -524,7 +451,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 32,
+    id: 27,
     name: 'Phòng Đôi Khu Phú Mỹ Hưng - HCM',
     type: 'Đôi',
     price: 1300000,
@@ -539,7 +466,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 33,
+    id: 28,
     name: 'Phòng Gia Đình Thảo Điền - HCM',
     type: 'Gia đình',
     price: 2500000,
@@ -554,7 +481,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 34,
+    id: 29,
     name: 'Phòng VIP Sông Sài Gòn - HCM',
     type: 'VIP',
     price: 4500000,
@@ -569,7 +496,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 35,
+    id: 30,
     name: 'Luxury Apartment - HCM',
     type: 'Luxury',
     price: 9000000,
@@ -584,7 +511,7 @@ export const mockRooms = [
     status: 'Trống'
   },
   {
-    id: 36,
+    id: 31,
     name: 'Phòng Đôi Gần Trung Tâm - Đà Nẵng',
     type: 'Đôi',
     price: 900000,
@@ -599,7 +526,22 @@ export const mockRooms = [
     status: 'Đang sử dụng'
   },
   {
-    id: 37,
+    id: 51,
+    name: 'Phòng Đôi Gần Trung Tâm - Huế ',
+    type: 'Đôi',
+    price: 500000,
+    location: 'Huế',
+    image: 'https://images.unsplash.com/photo-1595526114035-0d45ed10c2cf?auto=format&fit=crop&w=400&q=80',
+    season: 'xuân',
+    description: 'Phòng đôi ở khu vực trung tâm Huế.',
+    images: ['https://images.unsplash.com/photo-1595526114035-0d45ed10c2cf?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1595526114004-ee9512c545d6?auto=format&fit=crop&w=600&q=80'],
+    interior: ['Giường đôi', 'Minibar', 'TV'],
+    view: 'Hướng phố',
+    notes: 'Thuận tiện đi lại.',
+    status: 'đang trống '
+  },
+  {
+    id: 32,
     name: 'Suite Hướng Biển Bãi Trước - Vũng Tàu',
     type: 'Suite',
     price: 4200000,
@@ -615,36 +557,45 @@ export const mockRooms = [
   },
 ];
 
-const roomTypes = ['Đơn', 'Đôi', 'VIP', 'Tổng thống', 'View biển', 'Gia đình'];
-const seasons = ['Hè', 'Đông', 'Xuân', 'Thu'];
-const locations = ['Hà Nội', 'Đà Nẵng', 'Nha Trang', 'Hồ Chí Minh', 'Vũng Tàu', 'Đà Lạt'];
-
 const RoomTypesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [type, setType] = useState<string | undefined>(undefined);
-  const [season, setSeason] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState<string | undefined>(undefined);
   const [price, setPrice] = useState<number | undefined>(undefined);
-  const [currentPage, setCurrentPage] = useState(1);
-  const roomsPerPage = 8; // Số phòng mỗi trang
+  const [season, setSeason] = useState<string | undefined>(undefined);
 
-  const navigate = useNavigate();
+  const customerInfoRef = useRef<HTMLDivElement>(null);
 
-  const filteredRooms = mockRooms.filter(room => {
-    return (
-      (!search || room.name.toLowerCase().includes(search.toLowerCase())) &&
-      (!type || room.type === type) &&
-      (!season || room.season === season) &&
-      (!location || room.location === location) &&
-      (!price || room.price <= price)
-    );
+  const roomTypes = Array.from(new Set(mockRooms.map(room => room.type)));
+  const locations = Array.from(new Set(mockRooms.map(room => room.location)));
+  const seasons = Array.from(new Set(mockRooms.map(room => room.season)));
+
+  const filteredRooms = mockRooms.filter((room: any) => {
+    const searchLower = search.toLowerCase();
+    const matchesSearch =
+      room.name.toLowerCase().includes(searchLower) ||
+      room.type.toLowerCase().includes(searchLower) ||
+      room.location.toLowerCase().includes(searchLower);
+
+    const matchesType = !type || room.type === type;
+    const matchesLocation = !location || room.location === location;
+    // Sửa điều kiện lọc giá cho đúng với biến price (giá tối đa)
+    const matchesPrice = !price || room.price <= price;
+    const matchesSeason = !season || room.season === season;
+
+    return matchesSearch && matchesType && matchesLocation && matchesPrice && matchesSeason;
   });
 
-  // Logic phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [roomsPerPage] = useState(8); // Adjust as needed
+
+  // Get current rooms
   const indexOfLastRoom = currentPage * roomsPerPage;
   const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
   const currentRooms = filteredRooms.slice(indexOfFirstRoom, indexOfLastRoom);
 
+  // Change page
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -653,53 +604,79 @@ const RoomTypesPage: React.FC = () => {
     <div style={{ padding: 32, background: '#f5f6fa', minHeight: '100vh' }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
-          <Button icon={<HomeOutlined />} onClick={() => navigate('/')}>Về trang chủ</Button>
+          <Button icon={<HomeOutlined />} onClick={() => navigate('/')}>
+            Về trang chủ
+          </Button>
         </Col>
         <Col>
           <h1>Danh sách các loại phòng</h1>
         </Col>
       </Row>
+
       <Form layout="inline" style={{ marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <Form.Item label="Tìm kiếm">
-          <Input placeholder="Tên phòng, tour..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: 180 }} />
+          <Input placeholder="Tên phòng, tour..." value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} style={{ width: 180 }} />
         </Form.Item>
         <Form.Item label="Loại phòng">
-          <Select allowClear placeholder="Chọn loại phòng" style={{ width: 150 }} value={type} onChange={setType}>
+          <Select allowClear placeholder="Chọn loại phòng" style={{ width: 150 }} value={type} onChange={(value: string | undefined) => setType(value)}>
             {roomTypes.map(rt => <Option key={rt} value={rt}>{rt}</Option>)}
           </Select>
         </Form.Item>
         <Form.Item label="Địa điểm">
-          <Select allowClear placeholder="Chọn địa điểm" style={{ width: 150 }} value={location} onChange={setLocation}>
+          <Select allowClear placeholder="Chọn địa điểm" style={{ width: 150 }} value={location} onChange={(value: string | undefined) => setLocation(value)}>
             {locations.map(l => <Option key={l} value={l}>{l}</Option>)}
           </Select>
         </Form.Item>
         <Form.Item label="Giá tối đa">
-          <Input type="number" placeholder="VNĐ" value={price} onChange={e => setPrice(Number(e.target.value))} style={{ width: 150 }} />
-        </Form.Item>
+  <Select
+    placeholder="Chọn giá tối đa"
+    value={price}
+    onChange={(value) => setPrice(value)}
+    style={{ width: 150 }}
+    allowClear
+  >
+    {presetPrices.map((p) => (
+      <Option key={p} value={p}>
+        {p.toLocaleString("vi-VN")} VNĐ
+      </Option>
+    ))}
+  </Select>
+</Form.Item>
         <Form.Item label="Mùa du lịch">
-          <Select allowClear placeholder="Chọn mùa" style={{ width: 150 }} value={season} onChange={setSeason}>
+          <Select allowClear placeholder="Chọn mùa" style={{ width: 150 }} value={season} onChange={(value: string | undefined) => setSeason(value)}>
             {seasons.map(s => <Option key={s} value={s}>{s}</Option>)}
           </Select>
         </Form.Item>
       </Form>
+
       <Row gutter={[24, 24]}>
-        {currentRooms.map(room => (
+        {currentRooms.map((room: any) => (
           <Col key={room.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              hoverable
+              hoverable={room.status !== 'Đang sử dụng'}
               cover={<img alt={room.name} src={room.image} style={{ height: 180, objectFit: 'cover' }} />}
-              onClick={() => navigate(`/rooms/${room.id}`)} // Chuyển hướng sang trang chi tiết
             >
-              <Card.Meta title={room.name} description={<>
-                <div>Loại: {room.type}</div>
-                <div>Địa điểm: {room.location}</div>
-                <div>Giá: {room.price.toLocaleString()} VNĐ</div>
-                <div>Mùa gợi ý: {room.season}</div>
-              </>} />
+              <Card.Meta
+                title={<div style={{ fontSize: '1.1em', fontWeight: 'bold' }}>{room.name}</div>}
+                description={
+                  <>
+                    <p>Loại: {room.type}</p>
+                    <p>Giá: {room.price.toLocaleString()} VNĐ</p>
+                    <p>Địa điểm: {room.location}</p>
+                    <p>Trạng thái: {room.status === 'Available' ? 'Trống' : 'Đang sử dụng'}</p>
+                    {room.status !== 'Đang sử dụng' && (
+                       <Button type="primary" style={{ marginTop: 10 }} onClick={() => navigate(`/rooms/${room.id}`)}>
+                          Xem chi tiết & Đặt phòng
+                        </Button>
+                    )}
+                  </>
+                }
+              />
             </Card>
           </Col>
         ))}
       </Row>
+
       <Pagination
         current={currentPage}
         pageSize={roomsPerPage}
@@ -707,8 +684,14 @@ const RoomTypesPage: React.FC = () => {
         onChange={handlePageChange}
         style={{ marginTop: 24, textAlign: 'center' }}
       />
+
+      {/* Modal for room details if needed */}
+
+      <div ref={customerInfoRef}>
+        {/* Thông tin khách hàng */}
+      </div>
     </div>
   );
 };
 
-export default RoomTypesPage; 
+export default RoomTypesPage;

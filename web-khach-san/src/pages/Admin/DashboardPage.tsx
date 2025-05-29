@@ -71,16 +71,6 @@ const DashboardPage: React.FC = () => {
   //   ],
   // };
 
-  // const chartOptions = {
-  //   responsive: true,
-  //   plugins: {
-  //     legend: {
-  //       position: 'top' as const,
-  //     },
-  //   },
-  // };
-
-
   return (
     <div>
       <Title level={2}>Trang tổng quan</Title>

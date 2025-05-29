@@ -26,7 +26,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/admin" element={<AdminDashboardPage />}>
-          <Route index element={<DashboardPage />} /> {/* Default route for /admin */}
+          <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="bookings" element={<BookingManagementPage />} />

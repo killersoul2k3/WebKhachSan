@@ -51,20 +51,41 @@ body, html, #root, .ant-layout {
 }
 .about-section {
   background: #f5f6fa;
+  padding: 60px 0; /* Increased padding for better spacing */
+}
+.about-section h2 {
+  text-align: left;
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 2.2rem;
+}
+.about-section p {
+  text-align: justify;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  color: #555;
 }
 .about-img {
   width: 100%;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Stronger shadow */
+  transition: transform 0.3s ease-in-out;
+}
+.about-img:hover {
+  transform: scale(1.03); /* Subtle hover effect */
 }
 .event-section, .food-section {
   background: #fff;
 }
 .event-img, .food-img {
   width: 100%;
-  height: 180px;
+  height: 220px; /* Slightly increased height */
   object-fit: cover;
   border-radius: 8px;
+  transition: transform 0.3s ease-in-out;
+}
+.event-img:hover, .food-img:hover {
+  transform: scale(1.05); /* Subtle zoom on hover */
 }
 .booking-section {
   background: #f5f6fa;
@@ -121,6 +142,16 @@ body, html, #root, .ant-layout {
     margin-left: auto;
     margin-right: auto;
   }
+  .about-section h2 {
+    text-align: center;
+    font-size: 1.8rem;
+  }
+  .about-section p {
+    text-align: left;
+  }
+  .about-img {
+    margin-top: 24px;
+  }
 }
 
 /* Styles for main content area */
@@ -148,4 +179,11 @@ body, html, #root, .ant-layout {
 .main-footer .anticon { /* Also target Ant Design icons if any within these elements */
   color: #000; /* Change text color to black */
   margin-bottom: 8px;
+}
+
+.ant-card-meta-title {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 1.1rem;
+  color: #333;
 } 
